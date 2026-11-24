@@ -1,0 +1,73 @@
+/* Voice, persona and mood cards with tag chips (Speech pane). Chip and tag tones:
+   .chip / .tag pos·neg·wgt·neu·ref (--tag-* tokens); the raised cards use --shadow-card. */
+
+/* tags: one per fact (F, High Elf, British, Young, D·) */
+.tag.pos { background: var(--tag-pos-bg); color: var(--tag-pos-fg); }
+.tag.neg { background: var(--tag-neg-bg); color: var(--tag-neg-fg); }
+.tag.wgt { background: var(--tag-wgt-bg); color: var(--tag-wgt-fg); }
+.tag.neu { background: var(--tag-neu-bg); color: var(--tag-neu-fg); }
+.tag.ref { background: var(--tag-ref-bg); color: var(--tag-ref-fg); }
+.tag.def { background: var(--primary-soft); color: var(--primary); font-weight: 600; }
+
+/* chips: a filter you switch on and off */
+.chip-row { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
+.chip-row-h { width: 58px; flex-shrink: 0; font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--fg-dim); }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: var(--r-pill); border: 1px solid var(--line-soft);
+        background: var(--bg); color: var(--fg-muted); font-size: 11.5px; transition: all var(--dur-fast) var(--ease); }
+.chip:hover { color: var(--fg); border-color: var(--line); }
+.chip .chip-dot { width: 6px; height: 6px; border-radius: 999px; background: currentColor; opacity: .55; }
+.chip .chip-n { font-family: var(--mono); font-size: 10px; color: var(--fg-dim); }
+.chip.on { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.chip.on .chip-n { color: inherit; opacity: .7; }
+.chip.on .chip-dot { opacity: 1; }
+.chip.pos .chip-dot { color: var(--tag-pos-fg); } .chip.neg .chip-dot { color: var(--tag-neg-fg); }
+.chip.wgt .chip-dot { color: var(--tag-wgt-fg); } .chip.ref .chip-dot { color: var(--tag-ref-fg); }
+
+.filters { display: flex; flex-direction: column; gap: 7px; padding: 12px 0 4px; }
+.filters-foot { display: flex; align-items: center; gap: 10px; font-size: 11.5px; color: var(--fg-dim); }
+
+/* the cards */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; padding: 10px 0 14px; }
+.card-sub { font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--fg-dim); padding: 8px 0 0; }
+.vcard { position: relative; display: flex; flex-direction: column; gap: 8px; padding: 12px 12px 10px; text-align: left;
+         background: var(--bg-elev-2); border: 1px solid var(--line-soft); border-radius: var(--r-md); box-shadow: var(--shadow-card);
+         cursor: pointer; transition: border-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease); }
+.vcard:hover { border-color: var(--line); }
+.vcard.on { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft), var(--shadow-card); }
+.vcard-top { display: flex; align-items: baseline; gap: 6px; min-width: 0; }
+.vcard-name { font-family: var(--serif); font-size: 19px; line-height: 1.1; color: var(--fg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vcard-mood { font-family: var(--serif); font-style: italic; font-size: 14px; color: var(--fg-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vcard-play { margin-left: auto; flex-shrink: 0; width: 26px; height: 26px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center;
+              background: var(--bg-elev); color: var(--fg-muted); font-size: 10px; }
+.vcard-play:hover { background: var(--primary); color: var(--primary-ink); }
+.vcard-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.vcard-chosen { font-family: var(--mono); font-size: 10px; color: var(--primary); }
+
+/* a small three-way switch for the age, on the card */
+.mini-seg { display: inline-flex; padding: 2px; gap: 1px; background: var(--bg-elev); border: 1px solid var(--line-soft); border-radius: var(--r-pill); align-self: flex-start; }
+.mini-seg button { padding: 2px 8px; border-radius: var(--r-pill); font-size: 10.5px; color: var(--fg-dim); }
+.mini-seg button:hover { color: var(--fg); }
+.mini-seg button.on { background: var(--fg); color: var(--bg); }
+.mini-seg button:disabled { opacity: .5; cursor: default; }
+
+/* persona and mood cards: editable */
+.ecard-list { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+.ecard { display: flex; flex-direction: column; gap: 7px; padding: 12px; background: var(--bg-elev-2); border: 1px solid var(--line-soft);
+         border-radius: var(--r-md); box-shadow: var(--shadow-card); }
+.ecard-head { display: flex; align-items: center; gap: 6px; }
+.ecard-head .input { flex: 1; min-width: 0; font-family: var(--serif); font-size: 17px; padding: 4px 8px; }
+.ecard-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.ecard-foot .range-wrap { flex: 1; min-width: 180px; }
+.ages { display: inline-flex; align-items: center; gap: 4px; }
+.ages-label { font-size: 11px; color: var(--fg-dim); margin-right: 2px; }
+.ages .chip { padding: 2px 8px; font-size: 10.5px; }
+
+.voice-bar { display: flex; align-items: flex-start; gap: 14px; padding: 12px 0 0; }
+.voice-bar-text { flex: 1; font-size: 12px; color: var(--fg-dim); line-height: 1.45; }
+.voice-bar .ctl-row { flex-shrink: 0; }
+/* on a persona card the ages read as tags when on (soft, in their tone) and struck out when off */
+.ages .chip.on { border-color: transparent; background: var(--tag-neu-bg); color: var(--tag-neu-fg); }
+.ages .chip.on.pos { background: var(--tag-pos-bg); color: var(--tag-pos-fg); }
+.ages .chip.on.ref { background: var(--tag-ref-bg); color: var(--tag-ref-fg); }
+.ages .chip:not(.on) { color: var(--fg-faint); text-decoration: line-through; }
+.pane:has(.card-grid) { max-width: 860px; }  /* room for four voice cards a row */

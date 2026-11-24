@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../ui.css">
+<link rel="stylesheet" href="popup.css">
+</head>
+<body>
+<section id="read">
+  <div class="readrow"><button class="primary" id="readPage">▶ Read this page</button><button id="readSecond" hidden></button><span class="muted small" id="readWhat"></span></div>
+  <p class="small" id="waStatus"></p>
+  <h2>Voice on <b id="readHost"></b></h2>
+  <div class="seg" id="gender"><button data-g="all" class="on">All</button><button data-g="F">Female</button><button data-g="M">Male</button></div>
+  <select id="voice"></select>
+  <select id="persona"></select>
+  <select id="mood" hidden title="Said after the persona, on every part of this site"></select>
+  <select id="speed" hidden title="This site's speed, on top of the persona's and the app's reading speed"></select>
+  <label class="switch"><span>▶ beside paragraphs <span class="muted small">(hover one, click to read from there)</span></span> <input type="checkbox" id="paras"></label>
+  <h2>While reading <span class="muted small">(every site)</span></h2>
+  <label class="switch"><span>Highlight what's being read</span> <input type="checkbox" id="followHighlight"></label>
+  <label class="switch"><span>Scroll with the reading</span> <input type="checkbox" id="followScroll"></label>
+</section>
+<script src="popup.js"></script>
+</body>
+</html>

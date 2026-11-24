@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Hidden text</title>
+<style>
+  .gone { display: none; }
+  .ghost { visibility: hidden; }
+  .cookie { position: fixed; bottom: 0; left: 0; right: 0; background: #eee; }
+</style></head>
+<body>
+<nav><a href="/">Home</a> <a href="/about">About us and the people who make this site every day</a></nav>
+<article>
+  <h1>Visible heading about lighthouses</h1>
+  <p>Visible one: lighthouses guided ships along dangerous coasts for centuries.</p>
+  <p class="gone">Hidden by a class: this sentence must never be read aloud by anyone.</p>
+  <p style="display:none">Hidden inline: this sentence must never be read aloud either.</p>
+  <p class="ghost">Hidden as a ghost: this sentence takes room but must never be read.</p>
+  <p hidden>Hidden attribute: this sentence must never be read aloud at all.</p>
+  <p aria-hidden="true">Hidden from readers: this sentence must never be read aloud.</p>
+  <p class="visually-hidden">Hidden for screen readers only: never read by read aloud.</p>
+  <p>Visible two: keepers lived beside the light<span class="gone"> Hidden inside a paragraph</span> and trimmed the wick each night.</p>
+  <ul>
+    <li>Visible three: the first lights burned wood and coal on open fires.</li>
+    <li>Visible four: later lamps used oil and a lens to throw the beam far out to sea.</li>
+    <li class="gone">Hidden list item: this one must never be read aloud.</li>
+  </ul>
+  <table><tr><td>Hidden in a table: tables are not read as prose.</td></tr></table>
+  <p>Visible five: today most lighthouses run on their own, with no keeper at all.</p>
+  <div role="dialog" aria-label="Cookies"><p>Hidden in a consent dialog: we use cookies on this page, choose your settings now.</p></div>
+</article>
+<div class="cookie"><p>Hidden behind a banner: we use cookies to improve your experience, accept them all.</p><button>Accept</button></div>
+</body></html>

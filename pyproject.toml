@@ -1,0 +1,36 @@
+[project]
+name = "waudio"
+dynamic = ["version"]  # from backend/waudio/__init__.py (VERSION's first line)
+description = "Local dictation and read-aloud for macOS (Apple Silicon), on MLX"
+readme = "README.md"
+license = "Apache-2.0"
+authors = [{ name = "WilliamXP" }]
+requires-python = ">=3.12"
+# The floors are the versions Waudio is tested with (2026-11-24); newer ones usually work.
+dependencies = [
+    "mlx>=0.32.4",
+    "mlx-audio>=0.6.7",
+    "numpy>=2.4",
+    "sounddevice>=0.5.5",
+    "soundfile>=0.13.1",
+    "psutil>=7.2",
+    "pynput>=1.8",
+    "opencc-python-reimplemented>=0.1.7",
+    "pystray>=0.19",
+    "Pillow>=12.0",
+    "pyobjc-framework-Cocoa>=12.0",
+    "pyobjc-framework-Quartz>=12.0",
+]
+
+[project.optional-dependencies]
+# Telling speech from other sounds (engine/vad.py); without it, loudness alone.
+vad = ["silero-vad>=6.0", "onnxruntime>=1.20"]
+# Experimental: reading pages (OCR) and the Developer harness.
+ocr = ["mlx-vlm>=0.8", "opencv-python-headless>=4.10", "onnxruntime>=1.20", "PyYAML>=6.0"]
+
+[tool.setuptools]
+package-dir = { "" = "backend" }
+packages = { find = { where = ["backend"], include = ["waudio*"] } }
+
+[tool.setuptools.dynamic]
+version = { attr = "waudio.__version__" }

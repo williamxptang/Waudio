@@ -1,0 +1,76 @@
+/* Design tokens (:root and [data-theme="dark"]).
+   Cream + steel-blue studio palette, terracotta for the main action.
+   <html data-theme="light|dark"> is set by js/main.js ("system" follows macOS). */
+
+:root {
+  --bg:          #F4F2EA;
+  --bg-deep:     #EBE8DD;
+  --bg-elev:     #FBF9F2;
+  --bg-elev-2:   #FFFFFC;
+  --bg-hover:    #ECE9DD;
+
+  --line:        #D9D3C0;
+  --line-soft:   #E8E2CE;
+  --line-strong: #898373;
+
+  --fg:          #18171A;
+  --fg-muted:    #4E4A40;
+  --fg-dim:      #8A857A;
+  --fg-faint:    #B5B0A0;
+
+  --accent:      #3A5C7A;
+  --accent-soft: rgba(58, 92, 122, 0.10);
+  --accent-line: rgba(58, 92, 122, 0.32);
+
+  --primary:      #C96442;
+  --primary-deep: #A04F33;
+  --primary-ink:  #FBF7EE;
+  --primary-soft: rgba(201, 100, 66, 0.12);
+
+  --pass:      #2D6D4A;
+  --pass-soft: rgba(45, 109, 74, 0.10);
+  --warn:      #9C6510;
+  --warn-soft: rgba(156, 101, 16, 0.10);
+  --err:       #A33449;
+  --err-soft:  rgba(163, 52, 73, 0.08);
+  --neu-bg:    rgba(74, 67, 53, 0.06);
+
+  --sans:  "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --mono:  "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --serif: "Instrument Serif", Georgia, serif;
+  --cn:    "PingFang HK", "PingFang SC", system-ui, sans-serif;
+
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-pill: 999px;
+
+  /* tag colours (--tag-*) and raised surfaces (--shadow-card / --shadow-pop, light) */
+  --tag-pos-bg: rgba(45, 109, 74, 0.10);  --tag-pos-fg: #2D6D4A;
+  --tag-neg-bg: rgba(163, 52, 73, 0.08);  --tag-neg-fg: #A33449;
+  --tag-wgt-bg: rgba(58, 92, 122, 0.10);  --tag-wgt-fg: #3A5C7A;
+  --tag-neu-bg: rgba(74, 67, 53, 0.06);   --tag-neu-fg: #4E4A40;
+  --tag-ref-bg: rgba(156, 101, 16, 0.10); --tag-ref-fg: #9C6510;
+  --shadow-card: 0 1px 0 rgba(255,255,255,0.6) inset, 0 1px 2px rgba(0,0,0,0.03), 0 6px 16px rgba(52, 40, 20, 0.05);
+  --shadow-pop: 0 30px 60px rgba(52, 40, 20, 0.12), 0 2px 4px rgba(0,0,0,0.03);
+
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-fast: 120ms;
+}
+
+:root[data-theme="dark"] {
+  --bg: #1B1916; --bg-deep: #141210; --bg-elev: #242019; --bg-elev-2: #2D2820; --bg-hover: #2B271F;
+  --line: #3A352B; --line-soft: #2C2820; --line-strong: #6B6557;
+  --fg: #F2EFE6; --fg-muted: #C4BEB0; --fg-dim: #8E887A; --fg-faint: #615C50;
+  --accent: #7FB0D6; --accent-soft: rgba(127,176,214,.14); --accent-line: rgba(127,176,214,.35);
+  --primary: #E07A55; --primary-deep: #C96442; --primary-ink: #1B1916; --primary-soft: rgba(224,122,85,.16);
+  --pass: #5FB985; --pass-soft: rgba(95,185,133,.15);
+  --warn: #D9A24E; --warn-soft: rgba(217,162,78,.15);
+  --err: #E0728A; --err-soft: rgba(224,114,138,.15);
+  --neu-bg: rgba(255,255,255,.07);
+  --tag-pos-bg: rgba(95,185,133,.15); --tag-pos-fg: #7ED0A0; --tag-neg-bg: rgba(224,114,138,.15); --tag-neg-fg: #EE93A6;
+  --tag-wgt-bg: rgba(127,176,214,.15); --tag-wgt-fg: #9CC6E6; --tag-neu-bg: rgba(255,255,255,.07); --tag-neu-fg: #C4BEB0;
+  --tag-ref-bg: rgba(217,162,78,.15); --tag-ref-fg: #E6BC74;
+  --shadow-card: 0 1px 0 rgba(255,255,255,0.02) inset, 0 8px 24px rgba(0,0,0,0.35);
+  --shadow-pop: 0 20px 60px rgba(0,0,0,0.5), 0 2px 0 rgba(255,255,255,0.04) inset;
+}

@@ -1,0 +1,16 @@
+# Text that is hard to read aloud: one line per case, "<kind><TAB><text>". tests/test_tricky_text.py
+# reads each with every voice model on this Mac (--real) and writes a page of the clips to listen to.
+units	The parcel weighs 3.5 kg and measures 40 cm by 25 cm.
+roman	King Henry VIII ruled England, and Louis XIV ruled France.
+money	The ticket cost $12.99, or about £10.50 in London.
+dates	We met on 14 March 2026, and again on 2026-11-14.
+url	Visit https://example.org/help for more details.
+email	Write to help@example.org if anything goes wrong.
+emoji	That was wonderful 😊 and we laughed a lot 🎉.
+quotes	She said “not today” and walked away — quietly.
+long	the old keeper climbed the narrow stairs every evening with a can of oil in one hand and a cloth in the other and he cleaned the great lens until it shone and then he lit the wick and sat by the window to watch the beam sweep across the dark water where the fishing boats were coming home one by one
+polyphone	银行的行长走在行人中间。
+polyphone	他还没还我借给他的书。
+polyphone	重新称一下这些重要的东西。
+zh-numbers	今天是2026年11月14日，气温是18.5度。
+mixed	我用iPhone 15发了一封email给他。

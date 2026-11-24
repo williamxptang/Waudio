@@ -1,0 +1,8 @@
+body { width: 380px; padding: 10px 12px; }
+.readrow { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+#read select { margin: 6px 0; }
+#read h2 { margin-top: 12px; }
+.seg { display: flex; gap: 4px; }
+.seg button { flex: 1; padding: 3px 6px; }
+.seg button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+.err { color: var(--rec); }

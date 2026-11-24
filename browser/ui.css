@@ -1,0 +1,29 @@
+:root {
+  --bg: #f6f7f9; --card: #fff; --fg: #1b1f27; --muted: #69707d; --line: #e3e6eb;
+  --accent: #2f6fed; --rec: #e5484d; --ok: #1f9d55; --warn: #b7791f;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #15171c; --card: #1e2128; --fg: #e8eaee; --muted: #9aa1ad; --line: #2e323b; --accent: #5b8cff; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 13px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+h1 { font-size: 18px; margin: 0; display: flex; align-items: center; gap: 8px; }
+h2 { font-size: 13px; margin: 0 0 8px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin: 12px 0; }
+.muted { color: var(--muted); } .small { font-size: 12px; }
+button { font: inherit; border: 1px solid var(--line); background: var(--card); color: var(--fg); border-radius: 7px; padding: 5px 10px; cursor: pointer; }
+button:hover { border-color: var(--accent); }
+button:disabled { opacity: .5; cursor: default; }
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+button.danger { background: var(--rec); border-color: var(--rec); color: #fff; }
+button.ghost { background: transparent; }
+select, input { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 7px; padding: 5px 8px; width: 100%; }
+code { font: 12px ui-monospace, Menlo, monospace; word-break: break-all; }
+.tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 1px 6px; border-radius: 5px; background: var(--accent); color: #fff; }
+.tag.dash { background: #8b5cf6; }
+.dot { width: 12px; height: 12px; border-radius: 50%; background: var(--line); flex: none; }
+.dot.on { background: var(--rec); animation: pulse 1.2s infinite; }
+@keyframes pulse { 50% { opacity: .35; } }
+.switch { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 0; }
+.switch input { width: auto; }

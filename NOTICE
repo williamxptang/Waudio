@@ -1,0 +1,14 @@
+Waudio
+Copyright 2026 WilliamXP
+
+This product is licensed under the Apache License, Version 2.0 (LICENSE).
+
+It includes:
+- Fonts Inter, JetBrains Mono and Instrument Serif (frontend/fonts/), under the SIL Open Font
+  License 1.1 (frontend/fonts/OFL.txt).
+- A saved copy of the English Wikipedia article "Ada Lovelace" (revision 1383337217), as a test
+  page only (browser/tools/fixtures/reader/real-wikipedia-ada-lovelace.html): text by Wikipedia's
+  contributors, CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/).
+
+No model weights are included. The models Waudio was tested with each come under their own licence;
+see "Models" in README.md.

@@ -1,0 +1,16 @@
+name: tests
+on: [push, pull_request]
+jobs:
+  fast:
+    runs-on: macos-15  # Apple Silicon
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # test_version reads the tags
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: python -m pip install -e '.[vad,ocr]'
+      # The fast set: no models needed. On CI ($CI is set) a file skipped for a missing tool
+      # (Chrome, swiftc, node) fails the run, so nothing passes unrun.
+      - run: python backend/tests/run.py

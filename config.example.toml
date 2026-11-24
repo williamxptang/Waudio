@@ -1,0 +1,103 @@
+# Waudio settings. The settings window (menu bar → Settings…) edits these lines and applies
+# them at once; you can also edit here and choose Restart.
+
+[engine]
+backend = "mlx_audio"                  # model runner: backend/waudio/engine/models/<name>.py
+models_dir = "~/Documents/Speech/ASR"      # where the settings window looks for models
+model = "~/Documents/Speech/ASR/Qwen3-ASR-0.6B/Qwen3-ASR-0.6B-mlx-int8"
+languages = []                         # in order, max 2, e.g. ["Cantonese", "English"]: one = always that
+                                       # language; two = either, anything else redone in the first; [] = auto
+language = "auto"                      # used only when languages is empty: "auto" or one language
+follow_keyboard = true                 # the keyboard in use (ABC, Pinyin …) sets each dictation's language; on an
+                                       # English one nothing but English is written (Chinese speech is translated);
+                                       # false = detect it. Not with one language above: that one always
+mix_languages = false                  # with follow_keyboard: true = detect after all, languages can mix
+script = "as_is"                       # Chinese characters: "as_is", "s2hk", "s2t", "s2tw", "t2s"
+hotwords = []                          # names and terms the model should spell your way
+load_at_start = false                  # true = load the model when Waudio starts; false = on first dictation
+unload_after_minutes = 0               # 0 = keep the model loaded all day
+
+[dictation]
+typing = "instant"                     # "instant": every word typed as you speak, rewritten as it firms up;
+                                       # "steady": only words two passes agree on; "end": paste when you stop.
+                                       # Live modes correct each sentence at a pause and everything once more at stop
+pause_ms = 800                         # how long a pause ends a sentence (live typing); once a sentence has run
+                                       # 3 s a shorter one will do, down to 0.3 s at 6 s
+pause_by_speech = true                 # that shorter pause comes after 3 s of talking, not 3 s since the sentence
+                                       # began: stopping to think doesn't make the next breath end it
+final_check = true                     # when you stop, transcribe again from the audio and fix the text in place
+trim_pauses = true                     # the final check hears thinking pauses over 1 s as 0.3 s, so up to 2 minutes
+                                       # of speech gets it, however long you paused; false = recordings up to 2 minutes
+
+[text]
+commands = true                        # spoken commands: "new line", "comma", "full stop", 換行, 逗號, 句號 …
+numbers = false                        # write numbers as digits: "twenty four" -> 24, 二十四 -> 24
+replace = []                           # your fixes, in order: [["heard", "write"], …], e.g. [["chat gpt", "ChatGPT"]]
+
+[shortcut]
+keys = "alt+d"                         # format: backend/waudio/input/shortcut.py
+mode = "toggle"                        # "toggle" (press, press) or "hold" (hold to talk)
+double_tap_ms = 400
+
+[audio]
+max_seconds = 300                      # a recording stops by itself after this long
+warn_s = 10                            # a sound this many seconds before it does; 0 = no warning
+sounds = true                          # a sound when recording starts and when it ends
+start_sound = "Ping"                   # a macOS system sound (/System/Library/Sounds)
+stop_sound = "Pop"
+volume = 0.6                           # 0.1 – 1.0
+start_silence = 0.5                    # seconds at the start of every recording kept silent, so the start sound
+                                       # the microphone hears never becomes words; 0 – 1.0 (sounds off: at most 0.1)
+speech_floor_db = -50                  # quietest sound that can be speech (dBFS, -70 – -30): a quiet room never
+                                       # becomes made-up words; raise it if it still types from silence
+min_speech_s = 0.25                    # least seconds of speech before anything is transcribed (0.1 – 1.0)
+vad = true                             # a small voice model (Silero VAD) tells speech from noise as well as loudness:
+                                       # pauses and the speech gate; false = loudness alone
+others = "mute"                        # other sounds while listening, so the mic hears only you: "mute" (everything),
+                                       # "pause" (Music and Spotify, resumed after), "off"
+
+[pill]
+enabled = true                         # the floating pill with the words you are dictating, above the text box
+opacity = 0.5                          # its background and waveform, 0.1 – 1.0 (the words get half its transparency)
+scale = 1.0                            # its size, 0.8 – 1.8: the words, waveform, hints and margins grow together
+position = "text"                      # "text": just above the text box · "pointer": under the mouse pointer, moving with it · "fixed": at spot
+waveform = true                        # while dictating, bars that follow how loud you are (the microphone's level only)
+hints = true                           # a row under it: the microphone, and the keys that stop or cancel (Esc)
+spot = [0.5, 0.0]                      # fixed: share of the screen across (0 left – 1 right) and down (0 top – 1 bottom); drag it in Settings → Place…
+
+[ui]
+theme = "system"                       # "system", "light", "dark" — the settings window and the pill
+developer = true                       # Developer section (bottom of Settings); on while testing, turn off in General
+hide_unusable = true                   # Settings → Model (ASR, TTS, OCR) leaves out models this Mac can't run (originals, …)
+
+[history]
+keep = true                            # keep every dictated text on this Mac (Settings → History); false = keep nothing new
+keep_days = 0                          # remove entries older than this many days; 0 = keep forever
+keep_audio = false                     # also keep each dictation's recording (Play, Transcribe again, "What I said")
+
+[read]
+keys = "alt+r"                         # read the selected text aloud; press again (or Esc) to stop
+models_dir = "~/Documents/Speech/TTS"      # where Settings → Model → TTS finds the persona voice models
+model = "~/Documents/Speech/TTS/Qwen3-TTS-12Hz-0.6B-Base/Qwen3-TTS-12Hz-0.6B-Base-mlx-int4"  # copies a voice, no persona; a persona model
+                                       # (Settings → Model → TTS) or Breeze adds one: your recordings + built-in voices, each with a persona;
+                                       # built once with python -m waudio.engine.persona <CustomVoice int4> <Base int4> <dir>
+voices_dir = "~/Documents/Speech/TTS/voices"  # voices <lang>-<accent>-<name>.wav + .txt (what it says); voices.json: labels; <name>.persona.txt: how it speaks (persona models)
+voice = ""                             # a voice name from voices_dir, a built-in voice ("builtin:serena"), or a .wav path
+language = "auto"                      # "auto", "english" or "chinese"
+same_take = true                       # the same text reads the same way each time; false = a new take on every read
+speed = 1.0                            # 0.8 – 1.5
+debug_record = false                   # Developer → TTS: keep every piece read (its text, voice, persona, sound) in the log folder's readings/ (the last 10 readings), to find an odd sound again
+mood_speed_fixed = false               # true: a line with a mood (moods.json) reads at mood_speed, not the mood's own
+mood_speed = 1.0                       # 0.5 – 2.0; a client's own speed for a line still wins
+sentence_pause_ms = 450                # quiet after a sentence (. ! ? 。), less what the voice already left; shorter when faster
+clause_pause_ms = 150                  # after a long sentence's piece cut at a comma, semicolon or colon
+paragraph_pause_ms = 700               # after the last sentence of a paragraph or list item
+volume = 0.5                           # 0.1 – 1.0: 0.5 = every sentence at the same, normal loudness; 1.0 = twice as loud
+stream_chunk_s = 0.96                  # Breeze reads in chunks this long (0.32 – 2, whole 0.08 s frames): smaller starts sooner,
+                                       # but every join is a little rough; 0.64 – 1 sounds cleanest (Developer → TTS)
+unload_after_minutes = 10              # free the voice model's memory after this long unused; 0 = keep it
+
+[ocr]
+models_dir = "~/Documents/Speech/OCR"      # where Settings → Model → OCR finds page-reading models (the app doesn't read pages yet; the OCR harness does)
+level = "high"                         # Performance: "low" (PP-OCR, CPU), "standard" (GLM-OCR fast mode), "high" (GLM-OCR), "custom"
+reader = ""                            # level "custom": the page reader's folder ("" = PP-OCR alone)
