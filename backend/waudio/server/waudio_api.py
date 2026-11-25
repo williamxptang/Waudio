@@ -154,16 +154,22 @@ class ApiSocket:
             if not out:
                 return {"ok": False, "error": "nothing to read"}
             log.info(f"API: read {sum(len(t) for t, *_ in out)} chars in {len(out)} parts")
-            why = self.app.read_parts(out)
-            return {"ok": False, "error": why} if why else {"ok": True}
+            return self.started(self.app.read_parts(out))
         text, voice = req.get("text"), req.get("voice") or None
         if not isinstance(text, str) or not text.strip():
             return {"ok": False, "error": "nothing to read"}
         if not self.voice_ok(voice):
             return {"ok": False, "error": "no such voice"}
         log.info(f"API: read {len(text)} chars" + (f", voice {voice}" if voice else ""))
-        why = self.app.read_text(text[:MAX_CHARS], voice)
-        return {"ok": False, "error": why} if why else {"ok": True}
+        return self.started(self.app.read_text(text[:MAX_CHARS], voice))
+
+    def started(self, why):
+        """A read's answer: the error, or ok and the new reading's id (as status gives it), so the client that
+        started it can tell it from a reading started after it (another tab, the read shortcut)."""
+        if why:
+            return {"ok": False, "error": why}
+        rid = getattr(self.app.reader, "reading_id", None)
+        return {"ok": True} if rid is None else {"ok": True, "id": rid}
 
     def cmd_stop(self, req, cfg):
         self.app.reader.stop()

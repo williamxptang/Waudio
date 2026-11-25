@@ -7,9 +7,11 @@ mid-reading is test_reader_change.py, the rest test_reader_page.py. Each run wit
   python3 backend/tests/test_reader_follow.py
 """
 # needs: node, chrome
-import re, subprocess, tempfile
+import re, subprocess, sys, tempfile
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from waits import SLOW
 
 
 def profiles():
@@ -19,10 +21,10 @@ def profiles():
 
 
 def reads_aloud(group):
-    """reader-test.mjs --only=group: page (test_reader_page.py), follow (this file), change (test_reader_change.py)."""
+    """reader-test.mjs --only=group: page (test_reader_page.py), follow (this file), change (test_reader_change.py), stop (test_reader_stop.py)."""
     before = profiles()
     p = subprocess.run(["node", str(ROOT / "browser" / "tools" / "reader-test.mjs"), f"--only={group}"],
-                       capture_output=True, text=True, timeout=28)
+                       capture_output=True, text=True, timeout=28 * SLOW)
     assert p.returncode == 0 and "reader checks: ok" in p.stdout, p.stdout[-3000:] + p.stderr[-2000:]
     assert profiles() <= before, profiles() - before  # its throwaway profile went to the Trash
 

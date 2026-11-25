@@ -3,7 +3,8 @@
 over its limit fails the run, one over the limit is stopped with everything it started (a helper in
 a session of its own too), a helper left running never holds the run, what a file printed before its
 limit is kept, the fast set leaves out the real-model runs and --all adds them, only named files run
-when named, an unknown option is refused, and every file runs at a lower priority.
+when named, an unknown option is refused, and every file runs at a lower priority. Also the waits it
+lends the checks on a slow machine (waits.py: WAUDIO_TEST_SLOW, realtime()).
 
   python3 backend/tests/test_runner.py
 """
@@ -175,6 +176,41 @@ def every_slow_run_names_a_test_file_that_exists_and_every_file_runs():
     for (name, *args), limit in runner.SLOW.items():
         assert (runner.HERE / name).is_file() and args and limit > runner.FAST_LIMIT_S, (name, args, limit)
     assert runner.SLOW_ONLY <= {name for name, *_ in runner.SLOW}, "a file left out of the fast set never runs"
+
+
+@check
+def a_skipped_real_time_check_is_counted_not_failed():
+    """A file that skipped a real-time check (waits.realtime) passes, even a strict run, and the summary
+    counts the skip, even when the file printed much more after it."""
+    d = folder({"test_timing.py": f"print({runner.waits.SKIPPED_REALTIME!r} + 'a pause')\nprint('x' * 5000)\n"})
+    results = runner.run(runner.plan(d, slow={}), out=lambda line: None)
+    assert states(results) == {"test_timing.py": "ok"}, states(results)
+    assert runner.realtime_skips(results) == 1 and not runner.fails(results, strict=True)
+
+
+def waits_with(env, code):
+    """Run code after `from waits import *` with env set: its output."""
+    import os
+    p = subprocess.run([sys.executable, "-c", "from waits import *\n" + code], cwd=runner.HERE, capture_output=True,
+                       text=True, timeout=20, env={**os.environ, "WAUDIO_NO_REALTIME": "", "WAUDIO_TEST_SLOW": "", **env})
+    assert p.returncode == 0, p.stderr
+    return p.stdout
+
+
+@check
+def a_slow_machine_waits_longer_and_skips_real_time_checks_out_loud():
+    """WAUDIO_TEST_SLOW=3: a wait of 0.1 s still sees a thing that takes 0.2 s; without it, it doesn't; and each
+    fast file gets 3 times the time. WAUDIO_NO_REALTIME: realtime() is False and says what it skipped; unset, it is True and silent."""
+    late = "import time\nt = time.monotonic()\ntry:\n    wait_until(lambda: time.monotonic() - t > 0.2, timeout=0.1); print('saw it')\nexcept AssertionError: print('gave up')\n"
+    assert waits_with({"WAUDIO_TEST_SLOW": "3"}, late).strip() == "saw it"
+    assert waits_with({}, late).strip() == "gave up"
+    limit = "import run\nprint(run.fast_limit() / run.FAST_LIMIT_S)"
+    assert waits_with({"WAUDIO_TEST_SLOW": "3"}, limit).strip() == "3.0" and waits_with({}, limit).strip() == "1.0"
+    assert waits_with({"WAUDIO_NO_REALTIME": "1"}, "print(realtime('a pause'))") == SKIP_LINE + "False\n"
+    assert waits_with({}, "print(realtime('a pause'))") == "True\n"
+
+
+SKIP_LINE = runner.waits.SKIPPED_REALTIME + "a pause\n"
 
 
 assert CHECKS

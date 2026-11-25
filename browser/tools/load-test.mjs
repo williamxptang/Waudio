@@ -10,9 +10,7 @@ const EXT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const c = await launch();
 try {
   const id = await c.load(EXT);
-  const sw = await c.until(async () => (await c.send('Target.getTargets')).targetInfos.find(t => t.type === 'service_worker' && t.url.includes(id)), 10000);
-  if (!sw) throw new Error('the extension\'s service worker never started');
-  const session = (await c.send('Target.attachToTarget', { targetId: sw.targetId, flatten: true })).sessionId;
+  const session = await c.worker(id);
   const m = await c.evaluate(session, 'chrome.runtime.getManifest()');
   console.log(JSON.stringify({ id, name: m.name, version: m.version }));
 } finally {

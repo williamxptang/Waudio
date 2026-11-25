@@ -14,3 +14,6 @@ jobs:
       # The fast set: no models needed. On CI ($CI is set) a file skipped for a missing tool
       # (Chrome, swiftc, node) fails the run, so nothing passes unrun.
       - run: python backend/tests/run.py
+        env:
+          WAUDIO_TEST_SLOW: "3"    # a small virtual Mac: waits and file time limits x3
+          WAUDIO_NO_REALTIME: "1"  # its timers run late: the real-time checks run on a real Mac only

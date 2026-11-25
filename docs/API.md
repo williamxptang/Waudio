@@ -51,8 +51,10 @@ Which app, which version, what it can do.
 Read text aloud. Replaces what is being read now.
 ```json
 {"cmd": "read", "text": "Hello there.", "voice": "en-gb-rose"}
-→ {"ok": true}
+→ {"ok": true, "id": 42}
 ```
+- `id`: the new reading's own, as `status` gives it: a client that started it can tell it from a reading
+  started after it (another tab, the read shortcut) from its very first `status`.
 - `voice`: a name from `voices`, or `""` / left out for the voice chosen in Settings. Never a path.
 - Or several parts, read in turn as one reading, each in its own voice and persona:
 ```json

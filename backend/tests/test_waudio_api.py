@@ -120,6 +120,11 @@ assert len(app.asked) == n  # none of those reached the app
 app.why = "Stop dictating first, then read aloud"
 assert ask({"cmd": "read", "text": "Hi."}) == {"ok": False, "error": app.why}; app.why = None
 ask({"cmd": "read", "text": "x" * 300_000}); assert len(app.asked[-1][0]) == 200_000
+# a read answers with the new reading's id (as status gives it): the client that started it knows its own
+app.reader.reading_id = 42
+assert ask({"cmd": "read", "text": "Hi."}) == {"ok": True, "id": 42}
+assert ask({"cmd": "read", "parts": [{"text": "Hi."}]}) == {"ok": True, "id": 42}
+app.reader.reading_id = None
 
 # status, voices, personas
 st = ask({"cmd": "status"})
@@ -351,7 +356,7 @@ assert ask({"cmd": "pause"}) == {"ok": True} and app.reader.paused
 st = ask({"cmd": "status"})
 assert st["reading"] is True and st["paused"] is True and st["part"] == 3 and st["id"] == 41, st
 assert ask({"cmd": "resume"}) == {"ok": True} and not app.reader.paused and ask({"cmd": "status"})["paused"] is False
-app.reader.active, app.reader.part = False, None
+app.reader.active, app.reader.part, app.reader.reading_id = False, None, None  # as the app: no id when not reading
 assert ask({"cmd": "pause"}) == {"ok": False, "error": "not reading"}  # nothing to pause
 app.reader.finished = True  # the last reading played to its end (not stopped): a bookmark can go
 assert ask({"cmd": "status"})["finished"] is True

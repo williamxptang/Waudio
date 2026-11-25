@@ -86,7 +86,9 @@ python backend/tests/run.py test_read          # only the files a change affects
 ```
 
 A test file that needs a tool you don't have (Google Chrome, node, swiftc) is skipped, and the
-summary says so.
+summary says so. On a slow machine (a CI runner), `WAUDIO_TEST_SLOW=3` makes every wait and file time
+limit 3 times as long, and `WAUDIO_NO_REALTIME=1` skips the few checks that time real-time playback
+(each skip is printed and counted in the summary).
 
 ## Licence
 

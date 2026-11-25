@@ -4,7 +4,7 @@ Listens on 127.0.0.1 only, on a free port. The page URL carries a random token, 
 call must send it back (header X-W-Token) with a matching Host header, so web pages open in a
 browser on this Mac cannot read or change the settings.
 """
-import json, logging, mimetypes, secrets, threading
+import json, logging, mimetypes, secrets, socketserver, threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
@@ -13,6 +13,16 @@ from .. import NAME
 
 FRONTEND = Path(__file__).resolve().parents[3] / "frontend"
 log = logging.getLogger("waudio")
+
+
+class LocalServer(ThreadingHTTPServer):
+    """ThreadingHTTPServer without its hostname lookup: HTTPServer.server_bind asks socket.getfqdn()
+    for a name nothing here uses, and on a Mac whose DNS is slow to answer that takes ~30 s."""
+
+    def server_bind(self):
+        socketserver.TCPServer.server_bind(self)
+        host, port = self.server_address[:2]
+        self.server_name, self.server_port = host, port
 
 
 class Server:
@@ -79,7 +89,7 @@ class Server:
                     return self._api("POST")
                 self._send(405, {"error": "method not allowed"})
 
-        self.httpd = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        self.httpd = LocalServer(("127.0.0.1", 0), Handler)
         self.port = self.httpd.server_address[1]
         threading.Thread(target=self.httpd.serve_forever, daemon=True).start()
         log.info(f"settings server on 127.0.0.1:{self.port}")

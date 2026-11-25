@@ -238,6 +238,7 @@
       if (!r || !r.ok) { setReading(false); return notice((r && r.error) || 'No answer from the app'); }
       using = voiceOf(s);  // as chosen (what the app refused stays refused until the choice changes)
       setReading(true);
+      mine = typeof r.id === 'number' ? r.id : null;  // this reading, as the app numbers it (an app that doesn't: its first status)
       unmark();  // reading again: the mark goes
       if (list.length < all.length) notice(`Reading the first ${list.length} of ${all.length} parts: the page is longer than the app reads at once`);
     } finally {
@@ -247,11 +248,11 @@
   }
 
   async function stop() {
-    const was = reading && at >= 0;
-    if (was) await keepSpot(at);  // a late ■ never brings back a cleared bookmark
+    const spotAt = reading ? at : -1;  // a late ■ never brings back a cleared bookmark
+    setReading(false);  // stopped at once: a choice changed while the app is told to stop doesn't read again
+    if (spotAt >= 0) await keepSpot(spotAt);
     await wa({ cmd: 'stop' });
-    setReading(false);
-    if (was) mark();
+    if (spotAt >= 0) mark();
   }
 
   async function pauseOrGoOn() {

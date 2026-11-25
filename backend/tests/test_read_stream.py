@@ -16,6 +16,7 @@ from waudio.engine import tts
 from waudio.output import player as playback
 from waudio.output.player import Player
 from waudio.reader import Reader
+from waits import realtime
 
 RATE = 1000          # samples per second: a small rate keeps the fakes cheap; time is real
 SPEED = 1.3          # the fake model makes speech this many times faster than it plays
@@ -299,7 +300,8 @@ def the_reader_hands_each_part_its_own_speed():
 
 
 chunks_of_one_piece_play_as_one()
-a_long_sentence_after_a_short_one_leaves_no_pause()
+if realtime("no pause between a short sentence and a long one"):
+    a_long_sentence_after_a_short_one_leaves_no_pause()
 a_streamed_voice_lands_at_the_reading_level_and_keeps_its_ups_and_downs()
 a_voices_first_sentence_is_levelled_by_its_speech_not_a_breath_before_it()
 a_faint_voice_is_still_brought_to_the_reading_level()
@@ -308,7 +310,8 @@ a_hushed_sentence_does_not_turn_up_the_next()
 one_odd_sentence_doesnt_move_the_next_but_a_voice_that_changed_is_followed()
 a_voices_gain_starts_again_when_the_model_unloads()
 no_chunk_of_a_stopped_reading_reaches_the_player()
-the_player_notes_when_it_runs_dry()
+if realtime("a wait for the next sound longer than DRY_S is logged, shorter ones not"):
+    the_player_notes_when_it_runs_dry()
 a_stop_ends_a_streamed_sentence_within_a_chunk()
 another_reading_speed_is_made_whole()
 a_part_with_its_own_speed_is_made_whole_at_that_speed_times_the_reading_speed()

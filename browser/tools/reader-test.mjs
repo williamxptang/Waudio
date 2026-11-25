@@ -20,8 +20,9 @@ import { launch, sleep } from './chrome.mjs';
 
 const EXT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 // --only=page: everything but following the reading and changes mid-reading; --only=follow: following the
-// reading; --only=change: a choice changed mid-reading (each run within the fast set's 30 s, from
-// backend/tests/test_browser.py and test_reader_follow.py); none: all
+// reading; --only=change: a choice changed mid-reading; --only=stop: ■ while a choice changes, a reading
+// another started right after (each run within the fast set's 30 s, from backend/tests/test_browser.py and
+// test_reader_follow.py); none: all
 const GROUP = (process.argv.find(a => a.startsWith('--only=')) || '').slice(7);
 const runs = g => !GROUP || GROUP === g;
 const ROOT = resolve(EXT, '..');
@@ -36,6 +37,7 @@ let readingNow = false, pausedNow = false, partNow = 0, finishedNow = false, idN
 // (and no moods, no "pace": true, like the app before 0.4.38 / 0.4.48)
 let refusePace = false, refuseMood = false;  // answer a part's pace with "bad pace", a listed mood with "no such mood"
 let slowPersonas = 0;  // ms the app takes to answer "personas" (a busy app)
+let slowStop = 0;  // ms the app takes to answer "stop" (it has stopped; the page hears so late)
 const MOODS = ['Whisper', 'Angry'];
 function readAnswer(req) {  // as the app checks a part: its voice, its persona, its mood, then its pace
   for (const part of req.parts || []) {
@@ -67,11 +69,12 @@ const fake = socketServer(conn => {
       pause: { ok: true },
       resume: { ok: true },
     }[req.cmd] || { ok: false, error: 'unknown command' };
-    if (req.cmd === 'read' && answer.ok) { readingNow = true; pausedNow = false; partNow = 0; finishedNow = false; idNow += 1; }
+    if (req.cmd === 'read' && answer.ok) { readingNow = true; pausedNow = false; partNow = 0; finishedNow = false; idNow += 1; answer.id = idNow; }
     if (req.cmd === 'stop') { readingNow = false; finishedNow = false; }
     if (req.cmd === 'pause') pausedNow = true;
     if (req.cmd === 'resume') pausedNow = false;
     if (req.cmd === 'personas' && slowPersonas) setTimeout(() => conn.end(JSON.stringify(answer) + '\n'), slowPersonas);  // a busy app
+    else if (req.cmd === 'stop' && slowStop) setTimeout(() => conn.end(JSON.stringify(answer) + '\n'), slowStop);
     else conn.end(JSON.stringify(answer) + '\n');
   });
 });
@@ -131,8 +134,7 @@ try {
   mkdirSync(hosts, { recursive: true });
   writeFileSync(join(hosts, `${HOST_NAME}.json`), JSON.stringify({ name: HOST_NAME, description: 'test', path: join(c.profile, 'helper', 'waudio_native.py'),
     type: 'stdio', allowed_origins: [`chrome-extension://${extId}/`] }));
-  const swTarget = await c.until(async () => (await c.send('Target.getTargets')).targetInfos.find(t => t.type === 'service_worker' && t.url.includes(extId)), 10000);
-  const sw = (await c.send('Target.attachToTarget', { targetId: swTarget.targetId, flatten: true })).sessionId;
+  const sw = await c.worker(extId);
 
   if (runs('page')) {  // what is read; ▶, ⏸, ■ and the bookmark; an ordinary site
   // ---------- what is read: extract.js on its own, in the page ----------
@@ -434,6 +436,30 @@ try {
   await c.until(async () => !readingNow, 3000);
   await c.evaluate(sw, `chrome.storage.local.set({ readFollow: {}, readSites: {} })`);
 
+  }
+  if (runs('stop')) {  // ■ while a choice changes; a reading another started right after
+  // ■, then a new choice before the app's answer to the stop is back: stopped all the same, nothing read again
+  const readingOnLong = async () => {  // a new reading on the long page, as the page sees it
+    asked.length = 0;
+    await toLong({ type: 'reader-read' });
+    return c.until(async () => reads()[0] && (await toLong({ type: 'reader-state' }))?.reading === true, 4000);
+  };
+  await readingOnLong();
+  slowStop = 1500;
+  asked.length = 0;
+  await toLong({ type: 'reader-stop' });
+  await c.until(async () => asked.some(r => r.cmd === 'stop'), 3000);
+  await c.evaluate(sw, `chrome.storage.local.set({ readSites: { 'example.org': { pace: 1.3 } } })`);
+  await sleep(slowStop + 1000);  // past a second stop the page might send (held as long) and a reading after it
+  slowStop = 0;
+  check('■, then a new choice while the app is still stopping: nothing is read again', reads().length === 0 && !readingNow, JSON.stringify(asked.map(r => r.cmd)));
+  await c.evaluate(sw, `chrome.storage.local.set({ readSites: {} })`);
+  // another reading started within the page's first look at the app (another tab, ⌥R): the page's own has ended
+  await readingOnLong();
+  idNow += 1;  // the app reads something else now
+  const letGo = await c.until(async () => (await toLong({ type: 'reader-state' }))?.reading === false, 5000);
+  check('another reading started right after this page\'s: the page lets it go (no ⏸ / ■ for it)', letGo === true);
+  readingNow = false;
   }
   if (runs('page')) {  // the rest: what the app refuses, a site kept off, the popup
   // ---------- a site's mood the app no longer lists isn't sent; a pace only to an app that says "pace": true ----------

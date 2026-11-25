@@ -74,6 +74,15 @@ export async function launch(args = [], { env = process.env, before } = {}) {
       for (let i = 0; i < 60; i++) { if (await evaluate(sessionId, loaded).catch(() => false)) break; await sleep(250); }
       return sessionId;
     },
+    // the extension's service worker: a DevTools session in it, once its scripts can use chrome.* (on a slow
+    // machine the worker is listed before its context is ready, and an early evaluate finds no chrome)
+    async worker(id, ms = 20000) {
+      const t = await this.until(async () => (await send('Target.getTargets')).targetInfos.find(x => x.type === 'service_worker' && x.url.includes(id)), ms);
+      if (!t) throw new Error('the extension\'s service worker never started');
+      const session = (await send('Target.attachToTarget', { targetId: t.targetId, flatten: true })).sessionId;
+      if (!(await this.until(() => evaluate(session, "typeof chrome !== 'undefined' && !!chrome.runtime?.id"), ms))) throw new Error('the extension\'s worker never got chrome.runtime');
+      return session;
+    },
     async until(fn, ms, step = 200) { const end = Date.now() + ms; while (Date.now() < end) { const v = await fn().catch(() => null); if (v) return v; await sleep(step); } return null; },
     async close() {
       const quit = new Promise(r => (chrome.exitCode !== null || chrome.signalCode ? r() : chrome.once('exit', r)));

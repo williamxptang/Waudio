@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """The browser extension (browser/), in a throwaway headless Chrome (needs Google Chrome and node): it
 loads, Chrome gives it the id install.sh registers, it reports Waudio's name and version, its scripts parse,
-and its copy of the JS client is the client itself. Reading aloud: test_reader_page.py, test_reader_follow.py and
-test_reader_change.py (browser/tools/reader-test.mjs in three runs, each within the fast set's time).
+and its copy of the JS client is the client itself. Reading aloud: test_reader_page.py, test_reader_follow.py,
+test_reader_change.py and test_reader_stop.py (browser/tools/reader-test.mjs in four runs, each within the fast set's time).
 
   python3 backend/tests/test_browser.py
 """

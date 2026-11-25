@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Waudio for Chrome",
-  "version": "0.4.167",
+  "version": "0.4.171",
   "description": "Read web pages aloud in the voices of the speech app on this Mac.",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5V2Rg65zUAutl1/evHSGU/nIgS8FSAa0lZQYy7xzS8VCmMvp7O2McqfMjHZaNTz75ABY8gGG0GAS5YbUY3MFfzPrxriGoXQvX0NNIM6f2dS6P2L9OLJmGMeYPPoqaftjrnn8CAZ3LOr5R4u/afyQoXyUieSKAmP5U1645k0mN9eHa+rsXMh30Zkiy4Gn+9PcvwBFF3DiZqIHDgSeaEwcMs3f59Jt0RNILG4kWaLGx8eOj07w9z2MUWg3RZErrsrJ+vobLrM20M8ACc0j6dC/0nhOr4KLmAls/4NZS0FAsXFoeL0785dgyOX3E+1BItHtGr3vi9aUJ+ZwCepgbJjDNwIDAQAB",
   "minimum_chrome_version": "116",

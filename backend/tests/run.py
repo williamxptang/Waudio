@@ -19,6 +19,8 @@ from pathlib import Path
 
 import psutil
 
+import waits  # its SLOW (how much slower this machine is), not this file's SLOW runs
+
 HERE = Path(__file__).resolve().parent
 FAST_LIMIT_S = 30
 YIELD_NICE = 10  # every run at this lower priority: a test run never slows the Waudio you are using
@@ -124,7 +126,7 @@ def run(runs, python=sys.executable, out=print):
                 state = "over the limit"
             log.seek(0)
             output = log.read() + (f"\nstopped after {limit}s" if state == "over the limit" else "")
-        tail = output[-2000:]
+        tail = output[-2000:] + "".join("\n" + line for line in output[:-2000].splitlines() if line.startswith(waits.SKIPPED_REALTIME))
         took = time.monotonic() - t
         results.append((name, took, state, tail))
         out(f"{state:>15s}  {took:6.1f}s  {name}")
@@ -133,9 +135,19 @@ def run(runs, python=sys.executable, out=print):
     return results
 
 
+def realtime_skips(results):
+    """How many real-time checks the files skipped (waits.realtime): said in the summary, never a failure."""
+    return sum(t.count(waits.SKIPPED_REALTIME) for _, _, _, t in results)
+
+
 def fails(results, strict=False):
     """The run fails: a file failed or ran over, or (strict) one was skipped for a missing tool."""
     return any(r[2] not in ("ok", "skipped") or (strict and r[2] == "skipped") for r in results)
+
+
+def fast_limit():
+    """Each fast file's time limit: FAST_LIMIT_S, times WAUDIO_TEST_SLOW on a slow machine."""
+    return FAST_LIMIT_S * waits.SLOW
 
 
 def main(argv=None):
@@ -145,11 +157,12 @@ def main(argv=None):
         raise SystemExit(f"unknown option: {' '.join(unknown)} (run.py [--all] [--strict] [test files])")
     every = "--all" in argv
     strict = "--strict" in argv or bool(os.environ.get("CI"))
-    results = run(plan(every=every, names=[a for a in argv if not a.startswith("-")]))
+    results = run(plan(every=every, names=[a for a in argv if not a.startswith("-")], fast_limit=fast_limit()))
     bad = [r for r in results if r[2] not in ("ok", "skipped")]
     skipped = [r for r in results if r[2] == "skipped"]
     print(f"{len(results) - len(bad) - len(skipped)} of {len(results)} passed in {sum(r[1] for r in results):.0f}s"
           + (f", {len(skipped)} SKIPPED for a missing tool" if skipped else "")
+          + (f", {n} real-time checks skipped (WAUDIO_NO_REALTIME)" if (n := realtime_skips(results)) else "")
           + ("" if every else " (fast set; --all adds the real-model runs)"))
     return 1 if fails(results, strict) else 0
 

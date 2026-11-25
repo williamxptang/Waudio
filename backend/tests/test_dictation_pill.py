@@ -9,7 +9,7 @@ dictation (kept in History) — at once while it is short, only on a second Esc 
 import shutil, sys, tempfile, threading, time
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from waits import nothing_more_for, wait_until
+from waits import nothing_more_for, realtime, wait_until
 from waudio import config
 tmp = Path(tempfile.mkdtemp()) / "config.toml"; shutil.copy(config.EXAMPLE, tmp); config.PATH = tmp
 from waudio import app as A
@@ -57,9 +57,10 @@ fresh()
 assert ("mic", "Test Mic") in sent, sent
 wait_until(lambda: len(levels()) >= 3, what="levels while dictating")
 assert set(levels()) == {0.5}, levels()
-t0, n0 = time.monotonic(), len(levels()); nothing_more_for(0.5)
-per_s = (len(levels()) - n0) / (time.monotonic() - t0)
-assert 8 <= per_s <= 14, f"{per_s:.1f} levels a second (one about every 80 ms)"
+if realtime("the pill's level about every 80 ms"):
+    t0, n0 = time.monotonic(), len(levels()); nothing_more_for(0.5)
+    per_s = (len(levels()) - n0) / (time.monotonic() - t0)
+    assert 8 <= per_s <= 14, f"{per_s:.1f} levels a second (one about every 80 ms)"
 a.cancel(); nothing_more_for(0.2); n = len(levels()); nothing_more_for(0.3)
 assert len(levels()) == n, "levels went on after the dictation ended"
 

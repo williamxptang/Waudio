@@ -48,7 +48,7 @@ listens, transcribes and pastes, and reads selected text aloud. One module per j
 | **output/** | **what goes out** | |
 | [`output/player.py`](waudio/output/player.py) | plays read-aloud speech piece after piece; stops within one 50 ms block | |
 | **server/** | **the link to the front end** | |
-| [`server/server.py`](waudio/server/server.py) | local web server: serves `../frontend`, guards the API (token + Host) | |
+| [`server/server.py`](waudio/server/server.py) | local web server: serves `../frontend`, guards the API (token + Host); binds without a host-name lookup (slow DNS would hold the start) | |
 | [`server/api.py`](waudio/server/api.py) | one method per endpoint + validation of every setting | adding a setting |
 | [`server/waudio_api.py`](waudio/server/waudio_api.py) | the Waudio API: other programs' way in (a socket readable by you only); `COMMANDS` and one `cmd_<name>` each — spec in [`docs/API.md`](../docs/API.md) | adding a command |
 | [`server/logs.py`](waudio/server/logs.py) | reads waudio.log + host.log for the Developer page: merged by time, no duplicates, no control lines, only new lines per poll | the live log |
@@ -57,10 +57,11 @@ listens, transcribes and pastes, and reads selected text aloud. One module per j
 | `platforms/linux.py`, `windows.py` | notes for later | porting |
 | **tests/** | | |
 | [`tests/run.py`](tests/run.py) | runs the checks, each file in its own process under a time limit: the fast set (every `test_*.py`, ≤ 30 s each) on every change, `--all` adds the real-model runs (`SLOW`: live typing, engine parity and the Breeze voice against its reference take (`tests/data/breeze_reference.json`, made by hand with `--make-reference`) and the tricky-text lines on every voice model (`tests/data/tricky.txt`; clips to listen to in `tmp/tricky-text/`) with `--real`, the memory check; each within its own limit of 5–15 min, your models from the main checkout's config.toml) before merging to main; never retries. A file that needs a tool says `# needs: node, chrome` (a command on PATH, or Chrome at `$CHROME`): without it the file is skipped and the summary says so, never failed | a slow file, a new real-model run, a new tool a test needs |
-| [`tests/waits.py`](tests/waits.py) | how a check waits: `wait_until(cond)` for the thing itself (fails after 5 s), `nothing_more_for(s)` only for "nothing more happens"; never a fixed sleep before an assert (a busy Mac outruns it) | a new check that waits |
+| [`tests/waits.py`](tests/waits.py) | how a check waits: `wait_until(cond)` for the thing itself (fails after 5 s), `nothing_more_for(s)` only for "nothing more happens"; never a fixed sleep before an assert (a busy Mac outruns it); `WAUDIO_TEST_SLOW=n` makes every wait (and run.py's file limits) n times as long, `realtime(what)` guards a check that times real-time playback (`WAUDIO_NO_REALTIME=1` skips it out loud, counted in the summary) | a new check that waits |
 | [`tests/test_portability.py`](tests/test_portability.py) | MLX and macOS's own APIs, commands and folders only in their places (platforms/, browser_os/macos.py, the runners that declare macOS); off the Mac a voice model says why, settings refuse it, and loading it raises before any model library | |
 | [`tests/test_runner.py`](tests/test_runner.py) | the runner: a failure or a file over its limit fails the run (stopped with what it started, helpers in their own session too), a helper left running never holds it, output before the limit kept, the fast set and `--all`, named files, unknown options refused | |
 | [`tests/test_shortcut.py`](tests/test_shortcut.py) | shortcut format and matching with simulated keys | |
+| [`tests/test_server_start.py`](tests/test_server_start.py) | the local web server starts at once and answers even when a host-name lookup would hang | |
 | [`tests/test_api.py`](tests/test_api.py) | the settings server over HTTP on a config copy | |
 | [`tests/test_engine.py`](tests/test_engine.py) | loop cut, token budget, script conversion; `--real` (slow set): engine vs the benchmark run (100 clips) + loop cap | |
 | [`tests/test_app.py`](tests/test_app.py) | app paths with a fake microphone and model | |
@@ -89,6 +90,7 @@ listens, transcribes and pastes, and reads selected text aloud. One module per j
 | [`tests/test_reader_page.py`](tests/test_reader_page.py) | the extension reads aloud (`browser/tools/reader-test.mjs --only=page`, a stand-in app): what is read on Wikipedia, ordinary and news sites, ▶ ⏸ ■ and the bookmark, refusals, the popup | |
 | [`tests/test_reader_follow.py`](tests/test_reader_follow.py) | following the reading on the page: Highlight / Scroll with the reading (`--only=follow`) | |
 | [`tests/test_reader_change.py`](tests/test_reader_change.py) | a voice, persona, mood or speed changed mid-reading is heard at once (`--only=change`) | |
+| [`tests/test_reader_stop.py`](tests/test_reader_stop.py) | the extension's ■ (`reader-test.mjs --only=stop`): a choice changed while the app is still stopping reads nothing again; a reading another tab or ⌥R started right after is let go | |
 | [`tests/test_config.py`](tests/test_config.py) | config.toml upgrades on load: a replaced setting (`config.RENAMED`) keeps your choice | |
 | [`tests/test_pill_spot.py`](tests/test_pill_spot.py) | the pill's fixed spot: `HUD.spotFrame` / `spotOf` from Host.swift compiled on their own | |
 | [`tests/test_waudio_api.py`](tests/test_waudio_api.py) | the Waudio API with a fake app: every command vs docs/API.md, waudio.sock the only socket, both clients, the Chrome helper, install.sh | |
