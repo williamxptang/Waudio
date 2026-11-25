@@ -88,6 +88,12 @@ export async function launch(args = [], { env = process.env, before } = {}) {
       const quit = new Promise(r => (chrome.exitCode !== null || chrome.signalCode ? r() : chrome.once('exit', r)));
       chrome.kill();
       await Promise.race([quit, sleep(5000)]);
+      // Chrome's helpers (and the native messaging host) can outlive it for a moment and still write into the
+      // profile, bringing it back after the Trash: wait for every process that names the profile, stop any left
+      const helpers = () => spawnSync('pgrep', ['-f', profile.replace(/[.^$*+?()[\]{}|\\]/g, '\\$&')]).stdout.toString()
+        .split('\n').filter(Boolean).map(Number).filter(pid => pid !== process.pid);
+      for (const end = Date.now() + 5000; helpers().length && Date.now() < end;) await sleep(50);
+      for (const pid of helpers()) try { process.kill(pid, 'SIGKILL'); } catch { /* gone already */ }
       spawnSync('trash', [profile]);  // never deleted outright
     },
   };
